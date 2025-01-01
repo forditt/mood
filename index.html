@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Трекер настрою</title>
+    <style>
+/* Загальний стиль для чорної теми */
+
+#moodTable {
+    border-collapse: collapse;
+    width: 25%;
+    border: none; /* Тонкий контур таблиці */
+    border-radius: 10px; /* Округлені кути таблиці */
+}
+
+#moodTable td {
+    border: 1px solid #121212; /* Тонкий контур комірок */
+    padding: 8px; /* Відступи всередині комірок */
+    text-align: center; /* Вирівнювання тексту по центру */
+    word-wrap: break-word; /* Перенос слів на новий рядок, якщо вони не поміщаються */
+}
+
+#moodTable th, #moodTable td {
+    text-overflow: ellipsis; /* Трояндова омна для переповненого тексту */
+    overflow: hidden;
+    white-space: nowrap; /* Заборона на розбиття тексту по рядках */
+}
+
+
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #121212;
+        color: #ffffff;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    h1, p {
+        text-align: center;
+        margin: 10px 0;
+    }
+
+    table {
+        border-collapse: collapse;
+        margin: 20px 0;
+        width: auto; /* Таблиця не займатиме всю ширину */
+        max-width: 100%; /* Адаптація до ширини екрана */
+    }
+
+    td {
+        width: 30px; /* Фіксована ширина для кожної клітинки */
+        height: 30px; /* Фіксована висота */
+        border: 1px solid #333333;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    /* Кольори настрою */
+    .color-0 { background-color: #ffffff; }
+    .color-1 { background-color: #4CAF50; }
+    .color-2 { background-color: #388E3C; }
+    .color-3 { background-color: #ffdb3b; }
+    .color-4 { background-color: #F44336; }
+    .color-5 { background-color: #D32F2F; }
+
+    /* Адаптивність */
+    @media (max-width: 768px) {
+        td {
+            width: 25px;
+            height: 25px; /* Зменшення висоти на маленьких екранах */
+        }
+    }
+
+    @media (max-width: 480px) {
+        td {
+            width: 20px;
+            height: 20px; /* Ще менша висота для дуже малих екранів */
+        }
+    }
+
+    </style>
+</head>
+<body>
+    <h1>Трекер настрою</h1>
+    <p>Для вибору настрою натисніть декілька раз на день.</p>
+    
+
+    <!-- Палітра кольорів -->
+    <div class="palette">
+        <div class="color-0"></div>
+        <div class="color-1"></div>
+        <div class="color-2"></div>
+        <div class="color-3"></div>
+        <div class="color-4"></div>
+        <div class="color-5"></div>
+    </div>
+
+    <!-- Таблиця -->
+    <table id="moodTable">
+        <thead>
+            <tr>
+                <td>Пон.</td>
+                <td>Вівт.</td>
+                <td>Сер.</td>
+                <td>Чет.</td>
+                <td>П'ят.</td>
+                <td>Суб.</td>
+                <td>Нед.</td>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</body>
+
+    <script>
+        const COLORS = ["color-0", "color-1", "color-2", "color-3", "color-4", "color-5"]; // Від нейтрального до поганого
+        const moodTable = document.getElementById("moodTable");
+        const weeks = 52; // Кількість тижнів у році
+        const days = 7;  // З понеділка по суботу
+
+        // Завантажити дані з LocalStorage
+        const savedData = JSON.parse(localStorage.getItem("moodTracker")) || {};
+
+        // Створення таблиці
+        for (let week = 1; week <= weeks; week++) {
+            const row = document.createElement("tr");
+            for (let day = 1; day <= days; day++) {
+                const cell = document.createElement("td");
+                const key = `${week}-${day}`;
+                const savedColor = savedData[key] || COLORS[0];
+                cell.className = savedColor; // Завантажити клас кольору
+                cell.addEventListener("click", () => {
+                    const currentColor = COLORS.indexOf(cell.className);
+                    const nextColor = (currentColor + 1) % COLORS.length;
+                    cell.className = COLORS[nextColor];
+                    savedData[key] = COLORS[nextColor];
+                    localStorage.setItem("moodTracker", JSON.stringify(savedData)); // Зберегти дані
+                });
+                row.appendChild(cell);
+            }
+            moodTable.appendChild(row);
+        }
+    </script>
+</body>
+</html>
